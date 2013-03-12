@@ -7,6 +7,7 @@
  */
 namespace Migrate\Command;
 
+use Illuminate\Database\Schema\Blueprint;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,6 +30,8 @@ class SchemaCreate extends Base{
         $groups = $input->getArgument("group");
         $groups = $config->locateGroup($groups);
 
+	    $con = $this->getConnection($input);
+
         foreach($groups as $groupName){
             $output->writeln("[INFO] run group $groupName");
             $schema = $config->getSchema($groupName);
@@ -36,7 +39,13 @@ class SchemaCreate extends Base{
 
             foreach($schema as $tableName=>$_schema){
                 $output->writeln("[CREATE] create table $tableName");
-                $builder->create($tableName,$_schema);
+
+	            $blueprint = new Blueprint($tableName);
+	            $blueprint->create();
+	            $blueprint->engine = "InnoDB";
+	            $_schema($blueprint);
+	            $blueprint->build($con,$con->getSchemaGrammar());
+//                $builder->create($tableName,$_schema);
             }
         }
 	}
