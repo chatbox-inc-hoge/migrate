@@ -66,9 +66,10 @@ class Config{
 		Arr::set($data,"includes.default",static::forgeGroup($data));
 
 		$connection = static::forgeConnectionConfig($data);
+        $scaffold = static::forgeScaffoldConfig($data);
 		$subConfig = Arr::get($data,"includes",[]);
 
-		$obj = new static($connection,$subConfig);
+		$obj = new static($connection,$scaffold,$subConfig);
 		return $obj;
 	}
 
@@ -93,9 +94,26 @@ class Config{
 			$obj = new $className($configParam);
 			return $obj;
 		}else{
-			throw new \Exception("invalid class type ");
+			throw new \Exception("invalid class type on connection config loader");
 		}
 	}
+    /**
+     * @param $data
+     * @return \Migrate\Config\Scaffold
+     * @throws \Exception
+     */
+    static protected function forgeScaffoldConfig($data){
+        $defaultClass = "\\Migrate\\Config\\Scaffold";
+        $className = $defaultClass; // カスタムローダの埋め込み
+        $configParam = Arr::get($data,"scaffold",[]);//必要なパラメータの読み込み
+
+        if(is_a($className,$defaultClass,true)){//カスタムローダのクラスが正しいかの確認
+            $obj = new $className($configParam);
+            return $obj;
+        }else{
+            throw new \Exception("invalid class type on scaffold config loader");
+        }
+    }
 	/**
 	 * @param $data
 	 *   schema: 必要なパラメータ
@@ -138,6 +156,12 @@ class Config{
 	 */
 	protected $connection;
 
+    /**
+     * ジェネレータ設定
+     * こちらもルートの構成書しか持たない。
+     * @var \Migrate\Config\Scaffold
+     */
+    protected $scaffold;
 	/**
 	 * サブConfig情報
 	 * "schema" => Config\Schema
@@ -148,9 +172,10 @@ class Config{
     /**
      *
      */
-    public function __construct(Config\Connection $connection,array $subConfig)
+    public function __construct(Config\Connection $connection,Config\Scaffold $scaffold,array $subConfig)
     {
 	    $this->connection = $connection;
+        $this->scaffold = $scaffold;
 //	    $this->schema = $schema;
 //	    $this->seed = $seed;
 	    $this->subConfig = $subConfig;
@@ -163,6 +188,13 @@ class Config{
 	public function getConnection(){
 		return $this->connection;
 	}
+
+    /**
+     * @return Config\Scaffold
+     */
+    public function getScaffold(){
+        return $this->scaffold;
+    }
 
 	/**
 	 * @param null $group

@@ -6,7 +6,6 @@ namespace Migrate\Config;
  * Date: 2014/12/13
  * Time: 16:50
  */
-use FuelPHP\Common\DataContainer;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 
@@ -32,16 +31,4 @@ class Connection extends Base{
 		    throw new \Exception("invalid database setting");
 	    }
     }
-
-//    /**
-//     * @return Capsule
-//     */
-//    public function connectWithoutDatabase(){
-//        $configuration = $this->all();
-//        $configuration["database"] = null;
-//        $capsule = new Capsule;
-//        $capsule->addConnection($configuration);
-////        $capsule->setAsGlobal();
-//        return $capsule;
-//    }
 }
