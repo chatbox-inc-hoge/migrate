@@ -11,21 +11,27 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-$obj = new Command("seed");
+$obj = new Command("schema");
 
-$obj->setDescription("this is seed command");
+$obj->setDescription("this is schema command");
 $obj->setDefinition([
     new InputArgument("schemaGroup",null,"schema name",null),
-    new InputOption("truncate","t",InputOption::VALUE_NONE,"is Delete mode",null)
+    new InputOption("drop","d",InputOption::VALUE_NONE,"is Delete mode",null)
 ]);
 $obj->setCode(function(InputInterface $input, OutputInterface $output){
 
-    $config = require getcwd() . "/database.php";
+    $config = require getcwd() . "/Database.php";
 
-    $table = new \Migrate\Row($config);
+    $table = new \Migrate\Table($config);
 //    $dbName = $input->getArgument("dbname");
-    $output->writeln("hogehoge schema");
-    $table->seed();
+
+    if($input->getOption("drop")){
+        $output->writeln("drop schema");
+        $table->drop("hoge");
+    }else{
+        $output->writeln("create schema");
+        $table->create();
+    }
 
 //    if($input->getOption("delete")){
 //        $output->writeln("delete mode");

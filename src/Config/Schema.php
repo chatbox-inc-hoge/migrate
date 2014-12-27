@@ -14,7 +14,6 @@ class Schema extends Base{
 		$builder = $con->getSchemaBuilder();
 
 		foreach($this->all() as $tableName=>$_schema){
-			var_dump($tableName,$_schema);
 			$builder->create($tableName,$_schema);
 		}
 	}

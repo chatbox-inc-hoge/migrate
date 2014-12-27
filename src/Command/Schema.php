@@ -45,7 +45,7 @@ class Schema extends Base{
 	protected function commandCreate(InputInterface $input, OutputInterface $output){
 		$group = $input->getArgument("group");
 		$con = $this->getConnection($input);
-		$res = $this->getConfig($input)->getSchema($group)->migrate($con,$group);
-		$output->writeln("[$group] has successfully deleted.");
+		$res = $this->getConfig($input)->getSchema($group)->migrate($con);
+		$output->writeln("[$group] has successfully created.");
 	}
 }

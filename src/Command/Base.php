@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 
+
 abstract class Base extends Command{
 
 	protected $name = null;
@@ -51,6 +52,7 @@ abstract class Base extends Command{
 
 	protected function setUpDefinition(){
         $this->definitions[] = new InputOption("config","c",InputOption::VALUE_OPTIONAL,"configuration file","database.php");
+        $this->definitions[] = new InputOption("host",null,InputOption::VALUE_OPTIONAL,"connection setting",null);
 		$this->setDefinition($this->definitions);
 	}
 
@@ -70,10 +72,10 @@ abstract class Base extends Command{
 	 */
 	protected function getConfig(InputInterface $input){
 		if(is_null($this->config)){
-			$path = $input->getOption("config");
-
+			$path = $input->getOption("config","database.php");
 			$optionData = static::readInlineConnection($input);
-			$path = getcwd(). "/database.php";
+
+			$path = getcwd()."/".$path;
 
 			$config = \Migrate\Config::load($path,$optionData); //本来はloadで処理する
 			$this->config = $config;
@@ -83,8 +85,12 @@ abstract class Base extends Command{
 		return $this->config;
 	}
 
-	protected function readInlineConnection($input){
-		return [];
+	protected function readInlineConnection(InputInterface $input){
+        $config = [];
+        if($input->getOption("host")){
+
+        }
+		return $config;
 	}
 
 	protected function getCapsule($input){

@@ -20,7 +20,7 @@ $obj->setDefinition([
 ]);
 $obj->setCode(function(InputInterface $input, OutputInterface $output){
 
-    $config = require getcwd() . "/database.php";
+    $config = require getcwd() . "/Database.php";
 	$database = new \Migrate\Database($config);
 	$dbName = $input->getArgument("dbname");
 
