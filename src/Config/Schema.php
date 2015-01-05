@@ -9,12 +9,12 @@ use \Illuminate\Database\Connection;
  */
 class Schema extends Base{
 
-
 	public function migrate(Connection $con){
 		$builder = $con->getSchemaBuilder();
 
 		foreach($this->all() as $tableName=>$_schema){
 			$builder->create($tableName,$_schema);
+
 		}
 	}
 
