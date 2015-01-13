@@ -16,35 +16,36 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class Seed extends Base{
 
-	protected $name = "database";
-	protected $description = "this is migrate command";
+	protected $name = "seed";
+	protected $description = "seed: put data to table";
 
 	protected function setUpDefinition(){
 		$this->definitions = [
-			new InputArgument("dbname",InputArgument::REQUIRED,"database name",null),
-			new InputOption("delete","d",InputOption::VALUE_NONE,"is Delete mode",null)
+			new InputArgument("group",InputArgument::OPTIONAL,"group name","default"),
+			new InputOption("truncate","t",InputOption::VALUE_NONE,"truncate tables, insted of seeding",null)
 		];
-        parent::setUpDefinition();
+		parent::setUpDefinition();
 	}
 
-//	protected function process(InputInterface $input, OutputInterface $output){
-//		$database = new \Migrate\Database($this->getConfig($input));
-//		$dbName = $input->getArgument("dbname");
-//
-//		if($input->getOption("delete")){
-//			if($database->delete($dbName)){
-//				$line = "successfully delete database: $dbName";
-//			}else{
-//				$line = "database '$dbName' not found";
-//			}
-//			$output->writeln($line);
-//		}else{
-//			if($database->create($dbName)){
-//				$line = "successfully create database: $dbName";
-//			}else{
-//				$line = "cant create database '$dbName' already exist";
-//			}
-//			$output->writeln($line);
-//		}
-//	}
+	protected function process(InputInterface $input, OutputInterface $output){
+		if($input->getOption("truncate")){
+			$this->commandDelete($input,$output);
+		}else{
+			$this->commandCreate($input,$output);
+		}
+	}
+
+	protected function commandDelete(InputInterface $input, OutputInterface $output){
+		$group = $input->getArgument("group");
+		$con = $this->getConnection($input);
+		$res = $this->getConfig($input)->getSeed($group)->truncate($con);
+		$output->writeln("[$group] has successfully deleted.");
+	}
+
+	protected function commandCreate(InputInterface $input, OutputInterface $output){
+		$group = $input->getArgument("group");
+		$con = $this->getConnection($input);
+		$res = $this->getConfig($input)->getSeed($group)->insert($con);
+		$output->writeln("[$group] has successfully created.");
+	}
 }

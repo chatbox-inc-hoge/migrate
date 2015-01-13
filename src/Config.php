@@ -76,7 +76,7 @@ class Config{
 	static public function forgeGroup($data){
 		return [
 			"schema" => static::forgeSchemaConfig($data),
-			"seed" => static::forgeSchemaConfig($data),
+			"seed" => static::forgeSeedConfig($data),
 		];
 	}
 

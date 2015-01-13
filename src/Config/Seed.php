@@ -1,15 +1,33 @@
 <?php
 namespace Migrate\Config;
+
+use \Illuminate\Database\Connection;
+
+use Illuminate\Database\Capsule\Manager as Capsule;
+
 /**
- * Created by PhpStorm.
- * User: mkkn
- * Date: 2014/12/13
- * Time: 16:50
+ *
+ * コンストラクタにかけた時点で、tableName=>Schemaの形に正規化すること。
+ *
  */
+class Seed extends Base{
 
-class Schema extends Base{
+	public function insert(Connection $con){
+		;
+		foreach($this->all() as $seeds){
+			$tableName = array_shift($seeds);
+			foreach($seeds as $seed){
+				$builder = $con->table($tableName);
+				$seed($builder);
+			}
+		}
+	}
 
-
-
-
+	public function truncate(Connection $con){
+		foreach($this->all() as $seeds){
+			$tableName = array_shift($seeds);
+			$sql = 'DROP TABLE '."`$tableName`";
+			$con->update($sql);
+		}
+	}
 }

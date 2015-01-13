@@ -31,6 +31,9 @@ abstract class Base extends Command{
 	 * @var null
 	 */
 	private $config = null;
+	/**
+	 * @var Capsule
+	 */
 	private $capsule = null;
 
 	public function __construct($name = null)
@@ -93,6 +96,10 @@ abstract class Base extends Command{
 		return $config;
 	}
 
+	/**
+	 * @param $input
+	 * @return Capsule
+	 */
 	protected function getCapsule($input){
 		if(is_null($this->capsule)){
 			$connection = $this->getConfig($input)->getConnection();
