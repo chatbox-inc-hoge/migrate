@@ -9,6 +9,7 @@ function includeIfExists($file)
 }
 
 if (
+    (!$classLoader = includeIfExists(getcwd().'/vendor/autoload.php')) &&
     (!$classLoader = includeIfExists(__DIR__.'/../vendor/autoload.php')) &&
     (!$classLoader = includeIfExists(__DIR__.'/../../../autoload.php'))
 ) {
