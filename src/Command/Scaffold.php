@@ -37,7 +37,7 @@ class Scaffold extends Base{
 	}
 
     protected function commandCreateConfig(){
-        \Migrate\Scaffold::config();
+        $output->writeln(\Migrate\Scaffold::config());
     }
 
 	protected function commandCreate(InputInterface $input, OutputInterface $output){

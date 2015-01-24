@@ -39,8 +39,9 @@ abstract class Scaffold{
     static public function config(){
         $path = getcwd()."/database.php";
         $content = file_get_contents(__DIR__."/../scaffold/database.php");
-        $fs = new Filesystem();
-        $fs->dumpFile($path,$content);
+        return $content;
+        // $fs = new Filesystem();
+        // $fs->dumpFile($path,$content);
     }
 
     protected $tableName;
