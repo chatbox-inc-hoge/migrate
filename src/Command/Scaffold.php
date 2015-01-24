@@ -30,13 +30,13 @@ class Scaffold extends Base{
 
 	protected function process(InputInterface $input, OutputInterface $output){
         if($input->getOption("config")){
-            $this->commandCreateConfig();
+            $this->commandCreateConfig($output);
         }else{
             $this->commandCreate($input,$output);
         }
 	}
 
-    protected function commandCreateConfig(){
+    protected function commandCreateConfig($output){
         $output->writeln(\Migrate\Scaffold::config());
     }
 
