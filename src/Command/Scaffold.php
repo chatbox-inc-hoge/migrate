@@ -22,14 +22,23 @@ class Scaffold extends Base{
 	protected function setUpDefinition(){
 		$this->definitions = [
 			new InputArgument("group",InputArgument::OPTIONAL,"group name","default"),
-			new InputOption("drop","d",InputOption::VALUE_NONE,"work as delete mode with this",null)
+			new InputOption("drop","d",InputOption::VALUE_NONE,"work as delete mode with this",null),
+			new InputOption("setting","s",InputOption::VALUE_NONE,"generate configuration template",null)
 		];
 		parent::setUpDefinition();
 	}
 
 	protected function process(InputInterface $input, OutputInterface $output){
-        $this->commandCreate($input,$output);
+        if($input->getOption("config")){
+            $this->commandCreateConfig();
+        }else{
+            $this->commandCreate($input,$output);
+        }
 	}
+
+    protected function commandCreateConfig(){
+        \Migrate\Scaffold::config();
+    }
 
 	protected function commandCreate(InputInterface $input, OutputInterface $output){
 		$group = $input->getArgument("group");

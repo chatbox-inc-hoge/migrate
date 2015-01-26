@@ -10,7 +10,7 @@ namespace Migrate;
 use \Illuminate\Database\Connection;
 use \Illuminate\Database\Schema\Blueprint;
 
-use Symfony\Component\Filesystem\Filesystem;
+use \Symfony\Component\Filesystem\Filesystem;
 
 abstract class Scaffold{
 
@@ -35,6 +35,13 @@ abstract class Scaffold{
             $fs->dumpFile($obj->getOutput(),$obj->render());
         }
 	}
+
+    static public function config(){
+        $path = getcwd()."/database.php";
+        $content = file_get_contents(__DIR__."/../scaffold/database.php");
+        $fs = new Filesystem();
+        $fs->dumpFile($path,$content);
+    }
 
     protected $tableName;
     protected $columns;
