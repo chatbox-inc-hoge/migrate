@@ -16,19 +16,16 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class Scaffold extends Base{
 
-	protected $name = "scaffold";
-	protected $description = "this is scaffold command";
+    public function configure(){
+        $this->setName("scaffold");
+        $this->setDescription("create template");
+        parent::configure();
+        $this->addArgument("group",InputArgument::IS_ARRAY,"group name",["default"]);
+		$this->addOption("drop","d",InputOption::VALUE_NONE,"work as delete mode with this",null);
+		$this->addOption("setting","s",InputOption::VALUE_NONE,"generate configuration template",null);
+    }
 
-	protected function setUpDefinition(){
-		$this->definitions = [
-			new InputArgument("group",InputArgument::OPTIONAL,"group name","default"),
-			new InputOption("drop","d",InputOption::VALUE_NONE,"work as delete mode with this",null),
-			new InputOption("setting","s",InputOption::VALUE_NONE,"generate configuration template",null)
-		];
-		parent::setUpDefinition();
-	}
-
-	protected function process(InputInterface $input, OutputInterface $output){
+    protected function execute(InputInterface $input, OutputInterface $output){
         if($input->getOption("config")){
             $this->commandCreateConfig($output);
         }else{

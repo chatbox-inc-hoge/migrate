@@ -9,6 +9,8 @@ namespace Migrate;
 
 use FuelPHP\Common\Arr;
 
+use Chatbox\Config\Config as Container;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
  * Class Config
@@ -31,170 +33,80 @@ use FuelPHP\Common\Arr;
  * @package Migrate
  */
 class Config{
-
-    const TYPE_PHP = "php";
-    const TYPE_YAML = "yml";
-
-	/**
-	 * オプションからの直入に対応するための第二引数
-	 * @param $path
-	 * @param array $additionalData
-	 */
-	static public function load($path,$additionalData=[]){
-		$config = static::loadFile($path);
-		$data = array_merge($config,$additionalData);
-		return static::forge($data);
-	}
-
-	static protected function loadFile($_path){
-		$tryPath = [$_path];
-		$tryPath[] = getcwd()."/".$_path;
-		foreach($tryPath as $path){
-			if(file_exists($path) && is_file($path)){
-				return require $path;
-			}
-		}
-		throw new \Exception("invalid file!");
-	}
-
-	/**
-	 * 生配列を受け取って色々生成する人。
-	 * @param $data
-	 * @return \Migrate\Config
-	 */
-	static public function forge($data){
-		Arr::set($data,"includes.default",static::forgeGroup($data));
-
-		$connection = static::forgeConnectionConfig($data);
-        $scaffold = static::forgeScaffoldConfig($data);
-		$subConfig = Arr::get($data,"includes",[]);
-
-		$obj = new static($connection,$scaffold,$subConfig);
-		return $obj;
-	}
-
-	static public function forgeGroup($data){
-		return [
-			"schema" => static::forgeSchemaConfig($data),
-			"seed" => static::forgeSeedConfig($data),
-		];
-	}
-
-	/**
-	 * @param $data
-	 * @return \Migrate\Config\Connection
-	 * @throws \Exception
-	 */
-	static protected function forgeConnectionConfig($data){
-		$defaultClass = "\\Migrate\\Config\\Connection";
-		$className = $defaultClass; // カスタムローダの埋め込み
-		$configParam = Arr::get($data,"connections",[]);//必要なパラメータの読み込み
-
-		if(is_a($className,$defaultClass,true)){//カスタムローダのクラスが正しいかの確認
-			$obj = new $className($configParam);
-			return $obj;
-		}else{
-			throw new \Exception("invalid class type on connection config loader");
-		}
-	}
     /**
-     * @param $data
-     * @return \Migrate\Config\Scaffold
-     * @throws \Exception
+     * primary扱いになるグループ名
+     * @var string
      */
-    static protected function forgeScaffoldConfig($data){
-        $defaultClass = "\\Migrate\\Config\\Scaffold";
-        $className = $defaultClass; // カスタムローダの埋め込み
-        $configParam = Arr::get($data,"scaffold",[]);//必要なパラメータの読み込み
-
-        if(is_a($className,$defaultClass,true)){//カスタムローダのクラスが正しいかの確認
-            $obj = new $className($configParam);
-            return $obj;
-        }else{
-            throw new \Exception("invalid class type on scaffold config loader");
-        }
-    }
-	/**
-	 * @param $data
-	 *   schema: 必要なパラメータ
-	 * @return \Migrate\Config\Schema
-	 * @throws \Exception
-	 */
-	static protected function forgeSchemaConfig($data){
-		$defaultClass = "\\Migrate\\Config\\Schema";
-		$className = $defaultClass; // カスタムローダの埋め込み
-		$configParam = Arr::get($data,"schema",[]);//必要なパラメータの読み込み
-
-		if(is_a($className,$defaultClass,true)){//カスタムローダのクラスが正しいかの確認
-			$obj = new $className($configParam);
-			return $obj;
-		}else{
-			throw new \Exception("invalid class type ");
-		}
-	}
-	/**
-	 * @param $data
-	 * @return \Migrate\Config\Seed
-	 * @throws \Exception
-	 */
-	static protected function forgeSeedConfig($data){
-		$defaultClass = "\\Migrate\\Config\\Seed";
-		$className = $defaultClass; // カスタムローダの埋め込み
-		$configParam = Arr::get($data,"seed",[]);//必要なパラメータの読み込み
-
-		if(is_a($className,$defaultClass,true)){//カスタムローダのクラスが正しいかの確認
-			$obj = new $className($configParam);
-			return $obj;
-		}else{
-			throw new \Exception("invalid class type ");
-		}
-	}
-	/**
-	 * 接続先情報
-	 * 接続先情報はルートの構成書しか持たない。
-	 * @var \Migrate\Config\Connetion
-	 */
-	protected $connection;
-
+    public $defaultGroup = "default";
     /**
-     * ジェネレータ設定
-     * こちらもルートの構成書しか持たない。
-     * @var \Migrate\Config\Scaffold
+     * メイン設定ファイルを格納
+     * @var Container
      */
-    protected $scaffold;
-	/**
-	 * サブConfig情報
-	 * "schema" => Config\Schema
-	 * "seed" => Config\Seed
-	 */
-	protected $subConfig = [];
+    protected $primary;
+
+    protected $subContainer = [];
 
     /**
      *
      */
-    public function __construct(Config\Connection $connection,Config\Scaffold $scaffold,array $subConfig)
+    public function __construct(array $data = [])
     {
-	    $this->connection = $connection;
-        $this->scaffold = $scaffold;
-//	    $this->schema = $schema;
-//	    $this->seed = $seed;
-	    $this->subConfig = $subConfig;
+        $this->primary = Container::forge($data);
+    }
+
+    public function primaryIncludes($filePath){
+        $this->primary->load($filePath);
+    }
+
+    /**
+     * オンデマンドに必要なときだけ呼ぶからprotected
+     * @param $name
+     * @throws Exception
+     */
+    protected function includes($name){
+        if($includePath = $this->primary->get("includes.$name")){
+            $container = Container::forge([])->load($includePath);
+            $this->subContainer[$name] = $container;
+            return true;
+        }else{
+            return false;
+        }
     }
 
 	/**
-	 * @return \Migrate\Config\Connection
+	 * @return Capsule
 	 * @throws \Exception
 	 */
-	public function getConnection(){
-		return $this->connection;
+	public function makeCapsule($group,$withoutDatabase=false){
+        $conInfo = $this->getConnectionConfig($group);
+        if($conInfo){
+            ($withoutDatabase) && ($conInfo["database"] = "");
+            $capsule = new Capsule;
+            $capsule->addConnection($conInfo);
+            return $capsule;
+        }else{
+            throw new \Exception("invalid database setting");
+        }
 	}
 
     /**
+     * TEST用に
+     * @param $group
+     * @return mixed
+     */
+    public function getConnectionConfig($group){
+        return $this->primary->get("connections.$group");
+    }
+
+    /**
+     * ScaffoldはPrimaryからのみ
      * @return Config\Scaffold
      */
-    public function getScaffold(){
-        return $this->scaffold;
+    public function getScaffold($type){
+        return $this->primary->get("scaffold.$type");
     }
+
+
 
 	/**
 	 * @param null $group
@@ -202,8 +114,8 @@ class Config{
 	 * @throws \Exception
 	 */
 	public function getSchema($group){
-		//多階層Configとかしたかったら$groupを分割して、引数で渡すの?
-		return $this->getSubConfig($group)["schema"];
+		$container = $this->locateContainer($group);
+		return $container->get("schema",[]);
 	}
 
 	/**
@@ -212,30 +124,43 @@ class Config{
 	 * @throws \Exception
 	 */
 	public function getSeed($group=null){
-		//多階層Configとかしたかったら$groupを分割して、引数で渡すの?
-		return $this->getSubConfig($group)["seed"];
+        $container = $this->locateContainer($group);
+        return $container->get("seed",[]);
 	}
 
-	/**
-	 * 内部的な参照。includesエントリからConfigオブジェクトを取り出す。
-	 * @param $group
-	 * @return array subConfig配列
-	 * @throws \Exception
-	 */
-	protected function getSubConfig($group){
+    /**
+     * @param $group
+     * @return Container
+     * @throws \Exception
+     */
+    protected function locateContainer($group){
+        if($group === $this->defaultGroup)
+        {//デフォルトグループからの読み込み
+            return $this->primary;
+        }else
+        {//サブ設定ファイルの読み込み
+            if(!isset($this->subContainer[$group]) && $this->includes($group) === false)
+            {//まだロードされていない時で、サブ設定ファイルを読み込めなかった時
+                throw new \Exception("invalid group name: $group");
+            }
+            return $this->subContainer[$group];
+        }
+    }
 
-		$subConfig = Arr::get($this->subConfig,$group,null);//ここではパスかsubConfig配列が入ってくる
+    /**
+     * エイリアスを考慮してグループ名を変換する。
+     */
+    public function locateGroup(array $group){
+        $table = $this->primary->get("alias",[]);
+        $pool = [];
+        foreach($group as $g){
+            if($alias = \Chatbox\Arr::get($table,$g,false)){
+                $pool = array_merge($pool,array_values($alias));
+            }else{
+                $pool[] = $g;
+            }
+        }
+        return array_values(array_unique($pool));
+    }
 
-		if($subConfig){
-			if(!is_array($subConfig)){
-				$path = $subConfig;
-				$data = static::loadFile($path);
-				$subConfig = static::forgeGroup($data);
-				Arr::set($this->subConfig,$group,$subConfig);
-			}
-			return $subConfig;
-		}else{
-			throw new \Exception("invalid group name: $group");
-		}
-	}
-} 
+}

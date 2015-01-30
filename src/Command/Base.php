@@ -20,15 +20,9 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 abstract class Base extends Command{
 
-	protected $name = null;
-
-	protected $description = "empty description";
-
-    protected $definitions = [];
-
 	/**
 	 * getter 付きアクセスのため、private
-	 * @var null
+	 * @var \Migrate\Config
 	 */
 	private $config = null;
 	/**
@@ -36,74 +30,36 @@ abstract class Base extends Command{
 	 */
 	private $capsule = null;
 
-	public function __construct($name = null)
+	public function configure()
 	{
-		(func_num_args() === 0) && ($name = $this->name);
-		parent::__construct($name);
-		$this->setUp();
+        $this->addOption("config","c",InputOption::VALUE_OPTIONAL,"configuration file","database.php");
+        $this->addOption("host",null,InputOption::VALUE_OPTIONAL,"connection setting",null);
 	}
 
-	protected function setUp(){
-		$this->setUpDescription();
-		$this->setUpDefinition();
-		$this->setUpCode();
-	}
-
-	protected function setUpDescription(){
-		$this->setDescription($this->description);
-	}
-
-	protected function setUpDefinition(){
-        $this->definitions[] = new InputOption("config","c",InputOption::VALUE_OPTIONAL,"configuration file","database.php");
-        $this->definitions[] = new InputOption("host",null,InputOption::VALUE_OPTIONAL,"connection setting",null);
-		$this->setDefinition($this->definitions);
-	}
-
-	protected function setUpCode(){
-		$closure = function(InputInterface $input, OutputInterface $output){
-			$this->process($input,$output);
-		};
-		$this->setCode($closure);
-	}
-
-	abstract protected function process(InputInterface $input, OutputInterface $output);
-
-
-	/**
-	 * @param InputInterface $input
-	 * @return \Migrate\Config
-	 */
-	protected function getConfig(InputInterface $input){
+    /**
+     * @param InputInterface $input
+     * @return \Migrate\Config
+     */
+    protected function getConfig(InputInterface $input){
 		if(is_null($this->config)){
+            //Configにオプション初期値注入するならここで
+            $config = new \Migrate\Config();
 			$path = $input->getOption("config","database.php");
-			$optionData = static::readInlineConnection($input);
-
-			$path = getcwd()."/".$path;
-
-			$config = \Migrate\Config::load($path,$optionData); //本来はloadで処理する
+            (\Chatbox\Filesystem::with()->isAbsolutePath($path)) || $path = getcwd()."/$path";
+            $config->primaryIncludes($path);
 			$this->config = $config;
-//
-//			$this->config = require getcwd() . "/database.php";
 		}
 		return $this->config;
 	}
 
-	protected function readInlineConnection(InputInterface $input){
-        $config = [];
-        if($input->getOption("host")){
-
-        }
-		return $config;
-	}
-
 	/**
+     * カプセルオブジェクトの再利用はCommand側の責任で
 	 * @param $input
 	 * @return Capsule
 	 */
 	protected function getCapsule($input){
 		if(is_null($this->capsule)){
-			$connection = $this->getConfig($input)->getConnection();
-			$this->capsule = $connection->getCapsule("default");
+            $this->capsule = $this->getConfig($input)->makeCapsule("default");
 		}
 		return $this->capsule;
 	}
@@ -116,6 +72,14 @@ abstract class Base extends Command{
 		$capsule = $this->getCapsule($input);
 		return $capsule->getConnection();
 	}
+    /**
+     * キャッシュしない。
+     * @param $input
+     * @return \Illuminate\Database\Connection
+     */
+    protected function getConnectionWithoutDatabase($input){
+        return $this->getConfig($input)->makeCapsule("default",true)->getConnection();
+    }
 
 	/**
 	 * @param $input

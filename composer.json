@@ -14,7 +14,10 @@
         "illuminate/database": "4.*",
         "symfony/console": "~2.6",
         "symfony/filesystem": "~2.6",
-        "fuelphp/common": "~0.1"
+        "chatbox/phputil": "dev-master"
     },
-    "bin": ["bin/migrate"]
+    "bin": ["bin/migrate"],
+    "require-dev": {
+        "phpunit/phpunit": "@stable"
+    }
 }

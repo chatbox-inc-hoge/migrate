@@ -7,9 +7,9 @@ return [
         "default" => [
             'driver'    => 'mysql',
             'host'      => '127.0.0.1',
-            'database'  => 'database',
+            'database'  => '',
             'username'  => 'root',
-            'password'  => 'password',
+            'password'  => '',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
@@ -23,15 +23,16 @@ return [
                 $table->dateTime("created_at");
                 $table->dateTime("updated_at");
             },
+        "hogehoge"=>__DIR__.__FILE__
     ],
-    "seeds" => [
+    "seed" => [
         ["sample_table",function(Builder $builder){
             $builder->insert($data);
         }],
     ],
-//    "includes" => [
-//        "user" => __DIR__."/data/user.php"
-//    ]
+    "include" => [
+        "user" => __DIR__."/sub/user.php"
+    ]
 ];
 
 

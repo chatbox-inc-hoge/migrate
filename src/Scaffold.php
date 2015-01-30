@@ -36,14 +36,6 @@ abstract class Scaffold{
         }
 	}
 
-    static public function config(){
-        $path = getcwd()."/database.php";
-        $content = file_get_contents(__DIR__."/../scaffold/database.php");
-        return $content;
-        // $fs = new Filesystem();
-        // $fs->dumpFile($path,$content);
-    }
-
     protected $tableName;
     protected $columns;
     protected $primaryKeys;

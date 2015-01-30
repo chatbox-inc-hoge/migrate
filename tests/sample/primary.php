@@ -7,9 +7,9 @@ return [
         "default" => [
             'driver'    => 'mysql',
             'host'      => '127.0.0.1',
-            'database'  => 'database',
+            'database'  => '',
             'username'  => 'root',
-            'password'  => 'password',
+            'password'  => '',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
@@ -24,14 +24,15 @@ return [
                 $table->dateTime("updated_at");
             },
     ],
-    "seeds" => [
+    "seed" => [
         ["sample_table",function(Builder $builder){
             $builder->insert($data);
         }],
     ],
-//    "includes" => [
-//        "user" => __DIR__."/data/user.php"
-//    ]
+    "includes" => [
+        "user" => __DIR__."/sub/user.php",
+        "item" => __DIR__."/sub/item.php"
+    ]
 ];
 
 

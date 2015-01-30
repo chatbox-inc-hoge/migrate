@@ -1,3 +1,6 @@
+# migrate configuration file
+
+````
 <?php
 use \Illuminate\Database\Schema\Blueprint;
 use \Illuminate\Database\Query\Builder;
@@ -7,9 +10,9 @@ return [
         "default" => [
             'driver'    => 'mysql',
             'host'      => '127.0.0.1',
-            'database'  => 'database',
+            'database'  => '',
             'username'  => 'root',
-            'password'  => 'password',
+            'password'  => '',
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
@@ -29,9 +32,28 @@ return [
             $builder->insert($data);
         }],
     ],
-//    "includes" => [
-//        "user" => __DIR__."/data/user.php"
-//    ]
+    "includes" => [
+        "user" => __DIR__."/data/user.php"
+    ]
 ];
+
+````
+
+### connections.default
+
+DB configuration
+
+### schema
+
+
+
+### seed
+
+### includes
+
+sub configuration value
+
+### alias
+
 
 
