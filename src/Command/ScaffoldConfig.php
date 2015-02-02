@@ -23,7 +23,7 @@ class ScaffoldConfig extends Base{
     }
 
     protected function execute(InputInterface $input, OutputInterface $output){
-        $content = file_get_contents(__DIR__."/../scaffold/database.php");
+        $content = file_get_contents(__DIR__."/../../scaffold/database.php");
         $output->writeln($content);
 	}
 }
