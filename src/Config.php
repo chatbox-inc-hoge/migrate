@@ -7,8 +7,6 @@
  */
 namespace Migrate;
 
-use FuelPHP\Common\Arr;
-
 use Chatbox\Config\Config as Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -87,6 +85,14 @@ class Config{
         }else{
             throw new \Exception("invalid database setting");
         }
+	}
+	/**
+	 * @return Capsule
+	 * @throws \Exception
+	 */
+	public function getDatabaseName($group=null){
+        $conInfo = $this->getConnectionConfig($group);
+        return $conInfo["database"];
 	}
 
     /**

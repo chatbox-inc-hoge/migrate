@@ -63,6 +63,12 @@ abstract class Base extends Command{
 		}
 		return $this->capsule;
 	}
+	/**
+	 * @param $input
+	 */
+	protected function getDatabaseName($input){
+        return $this->getConfig($input)->getDatabaseName();
+	}
 
 	/**
 	 * @param $input
