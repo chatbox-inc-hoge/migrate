@@ -24,10 +24,12 @@ class CreateTable {
 
         $sql .= $if_not_exists ? ' IF NOT EXISTS ' : ' ';
 
-        $sql .= $this->quote($table->getName()).' (';
+        $sql .= $this->columnParser->quote($table->getName()).' (';
+        $fields = [];
         foreach($table->getColumns() as $column){
-            $sql .= "\n\t".$this->columnParser->createTable($column);
+            $fields[] = "\n\t".$this->columnParser->createTable($column);
         }
+        $sql .= implode($fields,",");
 //        if ( ! empty($primary_keys))
 //        {
 //            $key_name = \DB::quote_identifier(implode('_', $primary_keys), $db ? $db : static::$connection);

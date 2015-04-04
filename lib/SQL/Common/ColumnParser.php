@@ -22,7 +22,7 @@ abstract class ColumnParser {
         $this->grammer = $this->getGrammer();
     }
 
-    protected function quote($value){
+    public function quote($value){
         return $this->grammer->quote($value);
     }
 

@@ -27,7 +27,7 @@ class Column {
 
     protected $comment;
 
-    function __construct(array $data)
+    function __construct(array $data=[])
     {
         foreach($this as $key=>$value){
             if($value = Arr::get($data,$key)){

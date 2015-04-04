@@ -26,8 +26,8 @@ class CommandTableCreate extends Base{
     }
 
     protected function execute(InputInterface $input, OutputInterface $output){
-        $output->writeln("hogehogehoge");
         $sql = new CreateTable();
-
+        $hoge = $sql->sql(new \Chatbox\Chatbox\Schema\CbRoom("cb_room"));
+        var_dump($hoge);
 	}
 }
