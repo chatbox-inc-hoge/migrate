@@ -22,7 +22,7 @@ abstract class Base extends Command{
 
 	/**
 	 * getter 付きアクセスのため、private
-	 * @var \Migrate\Config
+	 * @var Config
 	 */
 	private $config = null;
 	/**
@@ -32,22 +32,22 @@ abstract class Base extends Command{
 
 	public function configure()
 	{
-        $this->addOption("config","c",InputOption::VALUE_OPTIONAL,"configuration file","database.php");
+        $this->addOption("config","c",InputOption::VALUE_OPTIONAL,"configuration file","migrate.php");
         $this->addOption("host",null,InputOption::VALUE_OPTIONAL,"connection setting",null);
 	}
 
     /**
      * @param InputInterface $input
-     * @return \Migrate\Config
+     * @return Config
      */
     protected function getConfig(InputInterface $input){
 		if(is_null($this->config)){
-            //Configにオプション初期値注入するならここで
-            $config = new \Migrate\Config();
-			$path = $input->getOption("config","database.php");
-            (\Chatbox\Filesystem::with()->isAbsolutePath($path)) || $path = getcwd()."/$path";
-            $config->primaryIncludes($path);
-			$this->config = $config;
+            $config = new Config();
+            $path = $input->getOption("config");
+            $fs = new \Symfony\Component\Filesystem\Filesystem();
+            ($fs->isAbsolutePath($path)) || $path = getcwd()."/$path";
+            $config->load($path);
+            $this->config = $config;
 		}
 		return $this->config;
 	}

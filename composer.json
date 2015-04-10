@@ -14,7 +14,7 @@
     },
     "license": "MIT",
     "require": {
-        "illuminate/database": "4.*",
+        "illuminate/database": "5.*",
         "symfony/console": "~2.6",
         "symfony/filesystem": "~2.6",
         "phpunit/dbunit": "~1.3",

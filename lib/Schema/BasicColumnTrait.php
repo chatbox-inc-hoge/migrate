@@ -79,9 +79,28 @@ trait BasicColumnTrait {
 
     private function createColumn($data,$optionalData){
         $data = $data + $optionalData;
-        return new Column($data);
+        return $this->addColumn(new Column($data));
+    }
+
+    protected function colCreatedAt($name = "created_at"){
+        return $this->colDatetime("created_at");
+    }
+    protected function colUpdatedAt($name = "updated_at"){
+        return $this->colDatetime("updated_at");
+    }
+
+    protected function setSurrogateKey($name="id"){
+        $this->colId($name,true);
+        $this->setPrimary([$name]);
+    }
+
+    protected function setDatetime(){
+        $this->colCreatedAt();
+        $this->colUpdatedAt();
     }
 
 
+    abstract public function addColumn(Column $column);
+    abstract public function setPrimary(array $keys);
 
 }

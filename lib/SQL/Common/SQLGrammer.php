@@ -13,7 +13,7 @@ abstract class SQLGrammer {
     use Facade;
 
     public function quote($value){
-        return $value;
+        return "`$value`";
     }
 
 

@@ -14,10 +14,11 @@ class Table {
 
     use PropertyContainerTrait;
 
-    protected $name;
-    protected $engine;
-    protected $columns = [];
-    protected $indices = [];
+    private $name;
+    private $engine;
+    private $columns = [];
+    private $indices = [];
+    private $primary = [];
 
     function __construct($name,array $data = [])
     {
@@ -58,6 +59,14 @@ class Table {
         return $this->indices;
     }
 
+    /**
+     * @return array
+     */
+    public function getPrimary()
+    {
+        return $this->primary;
+    }
+
     #endregion
 
     public function configure(){
@@ -68,6 +77,14 @@ class Table {
         $this->columns[$column->getName()] = $column;
     }
 
+    /**
+     * 必ず全てのカラムが登録された後に実行すること
+     * @param array $keys
+     */
+    public function setPrimary(array $keys)
+    {
+        $this->primary = $keys;
+    }
 
 
 }
