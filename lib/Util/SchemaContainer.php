@@ -11,6 +11,8 @@ use Chatbox\Migrate\Schema\Table;
 
 abstract class SchemaContainer {
 
+    use InstanceManager;
+
     protected $prefix;
 
     private $schemaFactories = [];
@@ -30,8 +32,14 @@ abstract class SchemaContainer {
 
     abstract public function configure();
 
-    protected function addSchema($name,callable $schema){
-        $this->schemaFactories[$name] = $schema;
+    protected function addSchema($name,$schema){
+        if($schema instanceof Table){
+            $this->result[$name] = $schema;
+        }else if(is_callable($schema)){
+            $this->schemaFactories[$name] = $schema;
+        }else{
+            throw new \Exception("invalid argument");
+        }
     }
 
     public function getSchema($name){
