@@ -8,7 +8,11 @@
 namespace Chatbox\Migrate\Util;
 
 use Chatbox\Migrate\Schema\Table;
-
+use Chatbox\Traits\InstanceManager;
+/**
+ * 専用のEntity Managerを生成するクラス。
+ * @package Chatbox\Migrate\Util
+ */
 abstract class SchemaContainer {
 
     use InstanceManager;
@@ -16,6 +20,9 @@ abstract class SchemaContainer {
     protected $prefix;
 
     private $schemaFactories = [];
+    /**
+     * @var Table[]
+     */
     private $result = [];
 
     function __construct($prefix=null)
@@ -42,6 +49,11 @@ abstract class SchemaContainer {
         }
     }
 
+    /**
+     * @param $name
+     * @return Table
+     * @throws \Exception
+     */
     public function getSchema($name){
         if(isset($this->result[$name])){
             return $this->result[$name];
@@ -61,6 +73,22 @@ abstract class SchemaContainer {
 
     protected function tableName($name){
         return "{$this->prefix}_$name";
+    }
+
+    public function getEntityClassMap(){
+        $rtn = [];
+        $tableKeys = array_merge(
+            array_keys($this->result),
+            array_keys($this->schemaFactories)
+        );
+        $tableKeys = array_unique($tableKeys);
+        foreach($tableKeys as $key){
+            $schema = $this->getSchema($key);
+            $entityClass = $schema->getEntity();
+            $entityClassName = get_class($entityClass);
+            $rtn[$entityClassName] = $schema;
+        }
+        return $rtn;
     }
 
     /**

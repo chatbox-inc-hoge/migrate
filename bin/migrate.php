@@ -22,6 +22,7 @@ $console->add(new Migrate\Command\SeedRun());
 $console->add(new Migrate\Command\SeedTruncate());
 
 $console->add(new \Chatbox\Migrate\Command\CommandTableCreate());
+$console->add(new \Chatbox\Migrate\Command\Debug());
 
 $console->run();
 
