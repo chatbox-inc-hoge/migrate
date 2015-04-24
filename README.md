@@ -3,15 +3,24 @@
 cli based php migration tool using Laravel Database Component And Symfony Console.
 
 
-```
-migrate database <db_name>
+## スキーマ管理
+ 
+````
+migrate schema:create [--database hoge] [--all] group 
+migrate schema:drop [--all] group
+````
 
-migrate database -d <db_name>
+## シード管理
 
-migrate tables <group_name>
+````
+migrate seed
+````
 
-migrate seed <group_name>
-```
+
+## 課題 & 解決
+
+- 取り回しの面倒臭さ。リバースエンジニアリングの必要性
+　→ シーディングを完璧にしてとりあえず回避。
 
 ## TODO
 
