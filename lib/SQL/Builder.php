@@ -9,35 +9,33 @@ namespace Chatbox\Migrate\SQL;
 
 use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Chatbox\Migrate\Doctrine\Schema;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Setup;
 
 class Builder {
 
     /**
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     protected $con;
-    /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
-     */
-    protected $platform;
 
-    function __construct($con)
+    function __construct(Connection $con)
     {
-        $this->con = \Doctrine\DBAL\DriverManager::getConnection($con);
-        $this->platform = $this->con->getDatabasePlatform();
+        $this->con = $con;
     }
 
+
     public function runSql($sql){
-        $this->con->executeQuery($sql);
+        $this->con->runSQL($sql);
     }
 
     public function createSchema(Schema $schema){
-        return $schema->toSql($this->platform);
+        return $schema->toSql($this->con->getPlatform());
 
     }
 
     public function dropSchema(Schema $schema){
-        $visitor = new DropSchemaSqlCollector($this->platform);
+        $visitor = new DropSchemaSqlCollector($this->con->getPlatform());
         $schema->visit($visitor);
         return $visitor->getQueries();
     }

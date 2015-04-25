@@ -40,5 +40,10 @@ class Schema extends DoctrineSchema{
         return $table;
     }
 
+    public function getSeeds(){
+
+    }
+
+
 
 }

@@ -21,8 +21,9 @@ $console = new Application();
 //$console->add(new Migrate\Command\SeedRun());
 //$console->add(new Migrate\Command\SeedTruncate());
 
-$console->add(new \Chatbox\Migrate\Command\Schema\CommandSchemaCreate());
-$console->add(new \Chatbox\Migrate\Command\Schema\CommandSchemaDrop());
+$console->add(new \Chatbox\Migrate\Command\CommandSchemaCreate());
+$console->add(new \Chatbox\Migrate\Command\CommandSchemaDrop());
+$console->add(new \Chatbox\Migrate\Command\CommandSeedRun());
 
 $console->run();
 
