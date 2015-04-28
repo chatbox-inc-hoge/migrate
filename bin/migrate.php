@@ -3,10 +3,10 @@
 use \Symfony\Component\Console\Application;
 
 
-if(!class_exists("\\Migrate\\Config")){
-    echo "you need to install local migrate.".PHP_EOL;
-    exit(1);
-}
+//if(!class_exists("\\Migrate\\Config")){
+//    echo "you need to install local migrate.".PHP_EOL;
+//    exit(1);
+//}
 
 $console = new Application();
 //$console->add(new Migrate\Command\DBDelete());

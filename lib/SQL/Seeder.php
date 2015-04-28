@@ -34,13 +34,26 @@ class Seeder {
      * @param $table
      * @param array $values
      */
-    public function acceptSeeds($table,array $values){
+    public function acceptRow($table,array $row){
         $qb = $this->con->getQueryBuilder();
         $query = $qb->insert($table);
-        foreach($values as $name=>$value){
-            $query->setValue($name,$value);
+        $i = 0;
+        foreach($row as $name=>$value){
+            $query->setValue($name,"?");
+            $query->setParameter($i,$value);
+            $i++;
         }
         $query->execute();
+    }
+    /**
+     * 一行を挿入するレコード
+     * @param $table
+     * @param array $values
+     */
+    public function acceptRows($table,array $rows){
+        foreach($rows as $row){
+            $this->acceptRow($table,$row);
+        }
     }
 
 

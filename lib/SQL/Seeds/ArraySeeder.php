@@ -28,7 +28,7 @@ class ArraySeeder implements SeederInterface{
     {
         foreach($this->seeds as $seed){
             list($table,$values) = $seed;
-            $seeder->acceptSeeds($table,$values);
+            $seeder->acceptRow($table,$values);
         }
     }
 

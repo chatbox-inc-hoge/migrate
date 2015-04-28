@@ -41,5 +41,4 @@ class Table extends DoctrineTable{
         return $table;
     }
 
-
 }
