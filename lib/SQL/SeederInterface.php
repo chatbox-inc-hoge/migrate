@@ -11,6 +11,18 @@ namespace Chatbox\Migrate\SQL;
 
 interface SeederInterface {
 
-    public function runWithSeeder(Seeder $seeder);
+    /**
+     * 事前処理を行う。
+     * @param SeederProcessor $seeder
+     * @return mixed
+     */
+    public function before(SeederProcessor $seeder);
+
+    /**
+     * 処理を行う
+     * @param SeederProcessor $seeder
+     * @return mixed
+     */
+    public function process(SeederProcessor $seeder);
 
 }

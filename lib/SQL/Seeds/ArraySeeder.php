@@ -1,8 +1,8 @@
 <?php
 namespace Chatbox\Migrate\SQL\Seeds;
 
-use Chatbox\Migrate\SQL\Seeder;
 use Chatbox\Migrate\SQL\SeederInterface;
+use Chatbox\Migrate\SQL\SeederProcessor;
 
 /**
  * Created by PhpStorm.
@@ -23,12 +23,16 @@ class ArraySeeder implements SeederInterface{
         $this->seeds = $seeds;
     }
 
+    public function before(SeederProcessor $seeder)
+    {
+    }
 
-    public function runWithSeeder(Seeder $seeder)
+
+    public function process(SeederProcessor $seeder)
     {
         foreach($this->seeds as $seed){
             list($table,$values) = $seed;
-            $seeder->acceptRow($table,$values);
+            $seeder->insertRows($table,$values);
         }
     }
 

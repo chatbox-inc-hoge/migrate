@@ -12,7 +12,11 @@ use Chatbox\Migrate\Doctrine\Schema;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 
-class Seeder {
+/**
+ * Seed関連のSQL処理
+ * @package Chatbox\Migrate\SQL
+ */
+class SeederProcessor {
 
     /**
      * @var Connection
@@ -24,17 +28,23 @@ class Seeder {
         $this->con = $con;
     }
 
-    public function runSeeder(SeederInterface $seeder){
-        $seeds = $seeder->getSeeds();
-        $seeder->visit($this);
-    }
-
     /**
-     * 一行を挿入するレコード
+     * 複数行を挿入する処理
      * @param $table
      * @param array $values
      */
-    public function acceptRow($table,array $row){
+    public function insertRows($table,array $rows){
+        foreach($rows as $row){
+            $this->insertRow($table,$row);
+        }
+    }
+
+    /**
+     * 一行を挿入する処理
+     * @param $table
+     * @param array $values
+     */
+    protected function insertRow($table,array $row){
         $qb = $this->con->getQueryBuilder();
         $query = $qb->insert($table);
         $i = 0;
@@ -45,16 +55,21 @@ class Seeder {
         }
         $query->execute();
     }
+
     /**
-     * 一行を挿入するレコード
+     * 行を削除する処理
      * @param $table
-     * @param array $values
+     * @param callable $cond
      */
-    public function acceptRows($table,array $rows){
-        foreach($rows as $row){
-            $this->acceptRow($table,$row);
+    public function deleteRows($table,callable $cond=null){
+        $qb = $this->con->getQueryBuilder();
+        $query = $qb->delete($table);
+        if($cond){
+            $query = $cond($query);
         }
+        $query->execute();
     }
+
 
 
 }

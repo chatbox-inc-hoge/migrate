@@ -1,8 +1,8 @@
 <?php
 namespace Chatbox\Migrate\SQL\Seeds;
 
-use Chatbox\Migrate\SQL\Seeder;
 use Chatbox\Migrate\SQL\SeederInterface;
+use Chatbox\Migrate\SQL\SeederProcessor;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -26,6 +26,18 @@ abstract class FileSeeder implements SeederInterface{
         $fileName && ($this->fileName = $fileName);
     }
 
+    public function before(SeederProcessor $seeder)
+    {
+
+    }
+
+    public function process(SeederProcessor $seeder)
+    {
+        foreach($this->getFileIterator() as $file){
+            $this->processFile($seeder,$file);
+        }
+    }
+
     public function getFileIterator(){
         $finder = new Finder();
         $finder->files()->in($this->dir);
@@ -35,14 +47,7 @@ abstract class FileSeeder implements SeederInterface{
         return $finder;
     }
 
-    abstract protected function processFile(Seeder $seeder,SplFileInfo $file);
-
-    public function runWithSeeder(Seeder $seeder)
-    {
-        foreach($this->getFileIterator() as $file){
-            $this->processFile($seeder,$file);
-        }
-    }
+    abstract protected function processFile(SeederProcessor $seeder,SplFileInfo $file);
 
 
 }

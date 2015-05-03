@@ -10,6 +10,7 @@ namespace Chatbox\Migrate\Doctrine;
 
 use Doctrine\DBAL\Schema\Schema as DoctrineSchema;
 use Doctrine\DBAL\Schema\SchemaConfig;
+use Chatbox\Migrate\SQL\SeederInterface;
 
 class Schema extends DoctrineSchema{
 
@@ -40,8 +41,13 @@ class Schema extends DoctrineSchema{
         return $table;
     }
 
-    public function getSeeds(){
-
+    /**
+     * シードの一覧を返す。テーブル名のバインドがあるので、
+     * こちらに配置するのが良さそう。
+     * @return SeederInterface[]
+     */
+    public function getSeeders(){
+        return [];
     }
 
 

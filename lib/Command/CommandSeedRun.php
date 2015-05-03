@@ -25,39 +25,15 @@ class CommandSeedRun extends Base{
 
     protected function handle()
     {
-        $seeder = $this->getSeeder();
+        $processor = $this->getSeederProcessor();
 
-        foreach($this->getSchemas() as $schema){
-            foreach($schema->getSeeds() as $seed){
-                $seed->runWithSeeder($seeder);
-            }
+        $seeders = $this->getSeeders();
+
+        foreach($seeders as $seeder){
+            $seeder->before($processor);
         }
-        exit;
-
-
-
-        $qb = $builder->getQueryBuilder();
-        $query = $qb->insert("blog_tag")
-            ->values([
-                "blog_id" => 2,
-                "name" => "'hogehoge'",
-                "created_at" => time(),
-                "updated_at" => time(),
-            ]);
-        var_dump($query->execute());
-
-//        foreach($this->getSchemas() as $schema){
-//            $sqls = $builder->dropSchema($schema);
-//            foreach($sqls as $sql){
-//                if($this->getOption("dump")){
-//                    $this->getOutput()->writeln($sql);
-//                }elseif($this->getOption("force")){
-//                    $builder->runSql($sql);
-//                }else{
-//                    $this->line("you should set --force or --dump option");
-//                    exit(1);
-//                }
-//            }
-//        }
-    }
+        foreach($seeders as $seeder){
+            $seeder->process($processor);
+        }
+   }
 }
