@@ -29,16 +29,4 @@ class Table extends DoctrineTable{
 
     }
 
-    public function createTable($tableName)
-    {
-        $table = new Table($tableName);
-        $this->_addTable($table);
-
-        foreach ($this->_schemaConfig->getDefaultTableOptions() as $name => $value) {
-            $table->addOption($name, $value);
-        }
-
-        return $table;
-    }
-
 }

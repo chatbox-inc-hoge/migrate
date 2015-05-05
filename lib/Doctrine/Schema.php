@@ -14,6 +14,18 @@ use Chatbox\Migrate\SQL\SeederInterface;
 
 class Schema extends DoctrineSchema{
 
+    /**
+     * @param $prefix
+     * @return static
+     */
+    static public function prefix($prefix){
+        $obj = new static;
+        $obj->setPrefix($prefix);
+        return $obj;
+    }
+
+    protected $prefix;
+
     public function __construct(
         array $tables = array(),
         array $sequences = array(),
@@ -21,24 +33,19 @@ class Schema extends DoctrineSchema{
         array $namespaces = array()
     ) {
         parent::__construct($tables, $sequences, $schemaConfig, $namespaces);
-        $this->configure();
     }
 
-    protected function configure(){
-
+    public function setPrefix($prefix){
+        $this->prefix = $prefix;
+        return $this;
     }
 
+    /**
+     * 遅延実行の関係上publicに変更
+     * こちらはprefixの関係上遅延実行する。
+     */
+    public function configure(){
 
-    public function createTable($tableName)
-    {
-        $table = new Table($tableName);
-        $this->_addTable($table);
-
-        foreach ($this->_schemaConfig->getDefaultTableOptions() as $name => $value) {
-            $table->addOption($name, $value);
-        }
-
-        return $table;
     }
 
     /**
@@ -49,7 +56,5 @@ class Schema extends DoctrineSchema{
     public function getSeeders(){
         return [];
     }
-
-
 
 }

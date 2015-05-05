@@ -68,6 +68,12 @@ trait SchemaLoaderTrait {
      */
     protected function getSchemas(){
         $con = $this->getConfig("config");
+
+        foreach($con["schema"] as $schema){
+            /** @var Schema $schema */
+            $schema->configure();
+        }
+
         return $con["schema"];
     }
 

@@ -9,6 +9,7 @@
 namespace Chatbox\Migrate\Doctrine;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Schema\Column;
 
 trait BasicColumnTrait {
 
@@ -107,5 +108,11 @@ trait BasicColumnTrait {
         return $this->addColumn($name,Type::OBJECT,$options);
     }
 
+    /**
+     * @param $columnName
+     * @param $typeName
+     * @param array $options
+     * @return Column
+     */
     abstract public function addColumn($columnName, $typeName, array $options = array());
 }
