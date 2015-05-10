@@ -12,9 +12,8 @@ use Chatbox\Migrate\Doctrine\Schema;
 /**
  * Class SchemeEloquentTrait
  * @package Chatbox\Migrate\Vendor\Illuminate
- * @deprecated
  */
-trait SchemeEloquentTrait {
+trait SchemaEloquentTrait {
 
     protected function setup(){
         $schema = $this->getSchema();
